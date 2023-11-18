@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Previsão do tempo</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 50px;
+        }
+
+        .container {
+            max-width: 600px;
+        }
+
+        h1 {
+            margin-bottom: 30px;
+        }
+
+        .btn {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Previsão do Tempo</h1>
+
+        <div class="form-group">
+            <label for="city">Digite o nome da cidade:</label>
+            <input type="text" class="form-control" id="city" placeholder="Digite a cidade">
+            <button class="btn btn-primary" onclick="getCoordinates()">Obter coordenadas</button>
+        </div>
+
+        <div class="form-group">
+            <label for="latitude">Latitude:</label>
+            <input type="text" class="form-control" id="latitude" placeholder="Latitude" readonly>
+            <label for="longitude">Longitude:</label>
+            <input type="text" class="form-control" id="longitude" placeholder="Longitude" readonly>
+            <button class="btn btn-success" onclick="getWeatherByCoordinates()">Obter previsão por coordenadas</button>
+        </div>
+
+        <div id="weatherInfo" class="mt-4">
+             
+        </div>
+    </div>
+    
+    <script>
+        function getCoordinates() {
+            const apiKey = '6e85b683f2c7c643e43375f98040a469';
+            const city = document.getElementById('city').value;
+            const apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
+
+            fetch(apiUrl)
+                .then(response => response.json())
+                .then(data => {
+                    displayCoordinates(data.coord.lat, data.coord.lon);
+                })
+                .catch(error => {
+                    console.error('Erro ao obter dados:', error);
+                });
+        }
+
+        function displayCoordinates(latitude, longitude) {
+            document.getElementById('latitude').value = latitude;
+            document.getElementById('longitude').value = longitude;
+        }
+
+        function getWeatherByCoordinates() {
+            const latitude = document.getElementById('latitude').value;
+            const longitude = document.getElementById('longitude').value;
+            const apiKey = '6e85b683f2c7c643e43375f98040a469';
+            const apiUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${apiKey}&units=metric`;
+
+            fetch(apiUrl)
+                .then(response => response.json())
+                .then(data => {
+                    displayWeather(data);
+                })
+                .catch(error => {
+                    console.error('Erro ao obter dados:', error);
+                });
+        }
+
+        function displayWeather(data) {
+            const weatherInfoDiv = document.getElementById('weatherInfo');
+
+            const temperature = data.main.temp;
+            const description = data.weather[0].description;
+            const latitude = data.coord.lat;
+            const longitude = data.coord.lon;
+
+            weatherInfoDiv.innerHTML = `
+                <p>Temperatura em ${data.name}: ${temperature}°C</p>
+                <p>Condição do tempo: ${description}</p>
+                <p>Latitude: ${latitude}</p>
+                <p>Longitude: ${longitude}</p>
+            `;
+        }
+    </script>
+</body>
+</html>
